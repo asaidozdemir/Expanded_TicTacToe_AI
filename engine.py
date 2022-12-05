@@ -13,12 +13,12 @@ class Board:
     def __init__(self, size=5):
         self.size = size
         self.marks = [["E" for row in range(size)] for column in range(size)]
-        self.print_board()
+        # self.print_board()
 
     def place_mark(self, input_row, input_col, mark_char="E"):
         if self.marks[input_row][input_col] == "E":
             self.marks[input_row][input_col] = mark_char
-            print("Row:", input_row, ", Col:", input_col, ", Mark:", mark_char)
+            print("Row:", input_row, ", Col:", input_col, ", Marking:", mark_char)
             return True
         else:
             print("Row:", input_row, ", Col:", input_col, ", Tile Occupied!")
@@ -53,7 +53,7 @@ class Game:
         right_to_left = []
         for i in range(self.board.size):
             left_to_right.append(self.board.marks[i][i])
-            right_to_left.append(self.board.marks[i][self.board.size-1-i])
+            right_to_left.append(self.board.marks[i][self.board.size - 1 - i])
         if all(item == "X" for item in left_to_right) or all(item == "X" for item in right_to_left):
             return "X Won - Cross"
         elif all(item == "O" for item in left_to_right) or all(item == "O" for item in right_to_left):
@@ -77,11 +77,35 @@ class Game:
             elif all(item == "O" for item in columns):
                 return "O Won - Column"
 
-        # Draw
+        # Draw or X Rule
         free_tile = False
         for i in range(self.board.size):
             for j in range(self.board.size):
                 if self.board.marks[i][j] == "E":
                     free_tile = True
         if not free_tile:
-            return "Draw"
+
+            x_rule = []
+            x_count = 0
+            o_count = 0
+
+            for i in range(self.board.size):
+                x_rule.append(self.board.marks[i][i])
+                x_rule.append(self.board.marks[i][self.board.size - 1 - i])
+
+            # if size is odd remove center piece
+            if self.board.size % 2:
+                x_rule.remove(self.board.marks[self.board.size // 2][self.board.size // 2])
+
+            for item in x_rule:
+                if item == "X":
+                    x_count += 1
+                elif item == "O":
+                    o_count += 1
+
+            if x_count > o_count:
+                return "X Won - X Rule"
+            elif x_count < o_count:
+                return "O Won - X Rule"
+            elif x_count == o_count:
+                return "Draw"

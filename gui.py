@@ -1,5 +1,3 @@
-from engine import Player
-from engine import Board
 from engine import Game
 
 # setting up pygame
@@ -72,6 +70,10 @@ while animating:
 
         # user mouse input
         if event.type == pygame.MOUSEBUTTONDOWN:
+
+            if game.over:
+                break
+
             x, y = pygame.mouse.get_pos()
             input_row = y // SQ_SIZE
             input_col = x // SQ_SIZE
