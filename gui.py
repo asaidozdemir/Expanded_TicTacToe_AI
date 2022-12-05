@@ -1,6 +1,5 @@
 from engine import Game
 
-
 # setting up pygame
 import pygame
 
@@ -37,21 +36,21 @@ COLORS = {"E": GREY, "X": RED, "O": BLUE}
 def draw_grid(left=0, top=0):
     for row in range(0, BOARD_SIZE):
         for column in range(0, BOARD_SIZE):
-            x = left + column * SQ_SIZE
-            y = top + row * SQ_SIZE
-            square = pygame.Rect(x, y, SQ_SIZE, SQ_SIZE)
+            position_x = left + column * SQ_SIZE
+            position_y = top + row * SQ_SIZE
+            square = pygame.Rect(position_x, position_y, SQ_SIZE, SQ_SIZE)
             pygame.draw.rect(SCREEN, WHITE, square, width=3)
 
             # move half square to right_bottom side
-            x += SQ_SIZE // 2
-            y += SQ_SIZE // 2
+            mark_x = position_x + SQ_SIZE // 2
+            mark_y = position_y + SQ_SIZE // 2
 
-            draw_marks(x, y, row, column)
+            draw_marks(mark_x, mark_y, row, column)
 
 
 # marks
-def draw_marks(x, y, row, column):
-    pygame.draw.circle(SCREEN, COLORS[game.board.marks[row][column]], (x, y), radius=SQ_SIZE // 4)
+def draw_marks(mark_x, mark_y, row, column):
+    pygame.draw.circle(SCREEN, COLORS[game.board.marks[row][column]], (mark_x, mark_y), radius=SQ_SIZE // 4)
 
 
 # create game
@@ -75,9 +74,9 @@ while animating:
             if game.over:
                 break
 
-            x, y = pygame.mouse.get_pos()
-            input_row = y // SQ_SIZE
-            input_col = x // SQ_SIZE
+            position_x, position_y = pygame.mouse.get_pos()
+            input_row = position_y // SQ_SIZE
+            input_col = position_x // SQ_SIZE
             game.make_move(input_row, input_col)
 
             result = game.check_game_over()

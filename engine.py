@@ -83,12 +83,13 @@ class Game:
             for j in range(self.board.size):
                 if self.board.marks[i][j] == "E":
                     free_tile = True
-        if not free_tile:
 
+        if not free_tile:
             x_rule = []
             x_count = 0
             o_count = 0
 
+            # assemble all marks on cross lines
             for i in range(self.board.size):
                 x_rule.append(self.board.marks[i][i])
                 x_rule.append(self.board.marks[i][self.board.size - 1 - i])
