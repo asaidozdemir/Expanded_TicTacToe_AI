@@ -19,10 +19,10 @@ class Board:
         if self.marks[input_row][input_col] == "E":
             self.marks[input_row][input_col] = mark_char
             print("Row:", input_row, ", Col:", input_col, ", Mark:", mark_char)
-            return 1
+            return True
         else:
             print("Row:", input_row, ", Col:", input_col, ", Tile Occupied!")
-            return 0
+            return False
 
     def print_board(self):
         print("Board is ", self.size, "*", self.size, " = ", (self.size * self.size))
@@ -45,3 +45,43 @@ class Game:
         # try to place current player's mark
         if self.board.place_mark(input_row, input_col, current_player.mark):
             self.player1_turn = not self.player1_turn
+
+    def check_game_over(self):
+
+        # cross solution 1
+        left_to_right = []
+        right_to_left = []
+        for i in range(self.board.size):
+            left_to_right.append(self.board.marks[i][i])
+            right_to_left.append(self.board.marks[i][self.board.size-1-i])
+        if all(item == "X" for item in left_to_right) or all(item == "X" for item in right_to_left):
+            return "X Won - Cross"
+        elif all(item == "O" for item in left_to_right) or all(item == "O" for item in right_to_left):
+            return "O Won - Cross"
+
+        # row/column solution
+        for i in range(self.board.size):
+
+            # row solution
+            if all(item == "X" for item in self.board.marks[i]):
+                return "X Won - Row"
+            elif all(item == "O" for item in self.board.marks[i]):
+                return "O Won - Row"
+
+            # column solution
+            columns = []
+            for row in self.board.marks:
+                columns.append(row[i])
+            if all(item == "X" for item in columns):
+                return "X Won - Column"
+            elif all(item == "O" for item in columns):
+                return "O Won - Column"
+
+        # Draw
+        free_tile = False
+        for i in range(self.board.size):
+            for j in range(self.board.size):
+                if self.board.marks[i][j] == "E":
+                    free_tile = True
+        if not free_tile:
+            return "Draw"

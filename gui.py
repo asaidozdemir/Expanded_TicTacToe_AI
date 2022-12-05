@@ -6,6 +6,7 @@ from engine import Game
 import pygame
 
 pygame.init()
+pygame.font.init()
 pygame.display.set_caption("Tic-Tac-Toe Game")
 
 # global variables
@@ -21,6 +22,9 @@ INDENT = 10
 WIDTH = SQ_SIZE * BOARD_SIZE + H_MARGIN
 HEIGHT = SQ_SIZE * BOARD_SIZE + V_MARGIN
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# font
+font = pygame.font.SysFont("fresansttf", SQ_SIZE)
 
 # colors
 GREY = (40, 50, 60)  # for background
@@ -73,6 +77,11 @@ while animating:
             input_col = x // SQ_SIZE
             game.make_move(input_row, input_col)
 
+            result = game.check_game_over()
+            if result is not None:
+                print(result)
+                game.over = True
+
         # user presses key
         if event.type == pygame.KEYDOWN:
 
@@ -84,6 +93,10 @@ while animating:
             if event.key == pygame.K_SPACE:
                 pausing = not pausing
 
+            # Backspace -- Restart the game
+            if event.key == pygame.K_r:
+                game = Game(board_size=BOARD_SIZE)
+
     # execution
     if not pausing:
         # draw background
@@ -91,6 +104,13 @@ while animating:
 
         # draw search grids
         draw_grid()
+
+        # at game over
+        if game.over:
+            text = game.check_game_over()
+            textbox = font.render(text, True, GREY, WHITE)
+            t_width, t_height = font.size(text)
+            SCREEN.blit(textbox, (BOARD_SIZE * SQ_SIZE // 2 - t_width // 2, BOARD_SIZE * SQ_SIZE // 2 - t_height // 2))
 
         # update window
         pygame.display.flip()
