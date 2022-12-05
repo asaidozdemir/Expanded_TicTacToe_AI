@@ -93,7 +93,7 @@ class Game:
                 x_rule.append(self.board.marks[i][i])
                 x_rule.append(self.board.marks[i][self.board.size - 1 - i])
 
-            # if size is odd remove center piece
+            # if size is odd remove center-piece
             if self.board.size % 2:
                 x_rule.remove(self.board.marks[self.board.size // 2][self.board.size // 2])
 
