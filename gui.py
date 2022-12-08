@@ -1,4 +1,4 @@
-from engine import Game
+from engine import Game, Minimax
 
 # setting up pygame
 import pygame
@@ -8,10 +8,9 @@ pygame.font.init()
 pygame.display.set_caption("Tic-Tac-Toe Game")
 
 # global variables
-
 SQ_SIZE = 90
-H_MARGIN = SQ_SIZE * 0
-V_MARGIN = SQ_SIZE * 0
+H_MARGIN = 0
+V_MARGIN = 0
 
 BOARD_SIZE = 5
 
@@ -22,7 +21,7 @@ HEIGHT = SQ_SIZE * BOARD_SIZE + V_MARGIN
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # font
-font = pygame.font.SysFont("fresansttf", SQ_SIZE)
+font = pygame.font.SysFont("fresansttf", SQ_SIZE//2)
 
 # colors
 GREY = (40, 50, 60)  # for background
@@ -55,6 +54,9 @@ def draw_marks(mark_x, mark_y, row, column):
 
 # create game
 game = Game(board_size=BOARD_SIZE)
+minimax = Minimax()
+
+game.make_move(0,0)
 
 # pygame loop
 animating = True
@@ -83,6 +85,14 @@ while animating:
             if result is not None:
                 print(result)
                 game.over = True
+            elif not game.playerHuman_turn and not game.over:
+                # AI move
+                moveX, moveY = minimax.get_best_move(game.board)
+                game.make_move(moveX, moveY)
+                result = game.check_game_over()
+                if result is not None:
+                    print(result)
+                    game.over = True
 
         # user presses key
         if event.type == pygame.KEYDOWN:
