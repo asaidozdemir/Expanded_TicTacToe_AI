@@ -1,9 +1,10 @@
 import sys
 
-MAX_DEPTH = 7
-X_VAL = 264
-O_VAL = 237
-E_VAL = 96
+MAX_DEPTH = 5
+X_VAL = 10
+O_VAL = 0
+E_VAL = 5
+
 
 class Player:
     def __init__(self, mark):
@@ -11,7 +12,7 @@ class Player:
 
     def place_marks(self):
         # get coordinates and place a mark
-        # currently ar game class
+        # currently at game class
         # probably unnecessary to move here
         return
 
@@ -65,6 +66,7 @@ class Game:
         self.over = False
 
     def make_move(self, input_row, input_col):
+
         # select current player
         current_player = self.playerHuman if self.playerHuman_turn else self.playerAI
 
@@ -73,6 +75,7 @@ class Game:
             self.playerHuman_turn = not self.playerHuman_turn
 
     def check_game_over(self):
+
         # cross solution 1
         left_to_right = []
         right_to_left = []
@@ -192,6 +195,7 @@ class Minimax:
         x_win = X_VAL * board.size
         o_win = O_VAL * board.size
 
+        # Row
         row_sum = 0
         for row in range(board.size):
             for col in range(board.size):
@@ -202,6 +206,7 @@ class Minimax:
                 return -100 - depth
             row_sum = 0
 
+        # Column
         row_sum = 0
         for col in range(board.size):
             for row in range(board.size):
@@ -212,6 +217,7 @@ class Minimax:
                 return -100 - depth
             row_sum = 0
 
+        # Cross 1
         row_sum = 0
         for i in range(board.size):
             row_sum += board.get_mark_value_at(i, i)
@@ -220,6 +226,7 @@ class Minimax:
         elif row_sum == o_win:
             return -100 - depth
 
+        # Cross 2
         row_sum = 0
         index_max = board.size - 1
         for i in range(index_max + 1):
@@ -228,5 +235,32 @@ class Minimax:
             return 100 - depth
         elif row_sum == o_win:
             return -100 - depth
+
+        """
+        # Cross X Rule
+        row_sum = 0
+        index_max = board.size - 1
+        for i in range(board.size):
+            row_sum += board.get_mark_value_at(i, i)
+        for i in range(index_max + 1):
+            row_sum += board.get_mark_value_at(i, index_max - i)
+
+        # board.size odd
+        if board.size % 2:
+            even = board.size // 2
+            odd = even + 1
+            row_sum -= board.get_mark_value_at(odd, odd)
+            if row_sum == x_win:
+                return 10 + depth
+            elif row_sum == o_win:
+                return -10 - depth
+
+        # board.size even
+        elif not board.size % 2:
+            if row_sum == x_win + X_VAL:
+                return 10 + depth
+            elif row_sum == o_win + O_VAL:
+                return -10 - depth
+        """
 
         return 0

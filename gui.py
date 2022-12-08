@@ -12,7 +12,7 @@ SQ_SIZE = 90
 H_MARGIN = 0
 V_MARGIN = 0
 
-BOARD_SIZE = 5
+BOARD_SIZE = 4
 
 INDENT = 10
 
@@ -21,7 +21,7 @@ HEIGHT = SQ_SIZE * BOARD_SIZE + V_MARGIN
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # font
-font = pygame.font.SysFont("fresansttf", SQ_SIZE//2)
+font = pygame.font.SysFont("fresansttf", SQ_SIZE // 2)
 
 # colors
 GREY = (40, 50, 60)  # for background
@@ -56,7 +56,7 @@ def draw_marks(mark_x, mark_y, row, column):
 game = Game(board_size=BOARD_SIZE)
 minimax = Minimax()
 
-game.make_move(0,0)
+game.make_move(0, 0)
 
 # pygame loop
 animating = True
