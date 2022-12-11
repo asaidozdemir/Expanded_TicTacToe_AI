@@ -1,20 +1,14 @@
 import sys
 
-MAX_DEPTH = 5
-X_VAL = 10
-O_VAL = 0
-E_VAL = 5
+MAX_DEPTH = 6
+X_VAL = 264
+O_VAL = 237
+E_VAL = 96
 
 
 class Player:
     def __init__(self, mark):
         self.mark = mark
-
-    def place_marks(self):
-        # get coordinates and place a mark
-        # currently at game class
-        # probably unnecessary to move here
-        return
 
 
 class Board:
@@ -22,7 +16,6 @@ class Board:
         self.size = size
         self.marks = [["E" for row in range(size)] for column in range(size)]
         self.available_moves = size * size
-        # self.print_board()
 
     def place_mark(self, input_row, input_col, mark_char="E"):
         if self.marks[input_row][input_col] == "E":
@@ -56,6 +49,22 @@ class Board:
     def any_moves_available(self):
         return self.available_moves > 0
 
+    def is_mark_at_cross_lines(self, row, col):
+        is_at_cross = False
+
+        for i in range(self.size):
+            if i == row and i == col:
+                is_at_cross = True
+                break
+
+        index_max = self.size - 1
+        for i in range(index_max + 1):
+            if i == row and index_max - i == col:
+                is_at_cross = True
+                break
+
+        return is_at_cross
+
 
 class Game:
     def __init__(self, board_size):
@@ -83,27 +92,27 @@ class Game:
             left_to_right.append(self.board.marks[i][i])
             right_to_left.append(self.board.marks[i][self.board.size - 1 - i])
         if all(item == "X" for item in left_to_right) or all(item == "X" for item in right_to_left):
-            return "X Won - Cross"
+            return "Red Won - Cross"
         elif all(item == "O" for item in left_to_right) or all(item == "O" for item in right_to_left):
-            return "O Won - Cross"
+            return "Blue Won - Cross"
 
         # row/column solution
         for i in range(self.board.size):
 
             # row solution
             if all(item == "X" for item in self.board.marks[i]):
-                return "X Won - Row"
+                return "Red Won - Row"
             elif all(item == "O" for item in self.board.marks[i]):
-                return "O Won - Row"
+                return "Blue Won - Row"
 
             # column solution
             columns = []
             for row in self.board.marks:
                 columns.append(row[i])
             if all(item == "X" for item in columns):
-                return "X Won - Column"
+                return "Red Won - Column"
             elif all(item == "O" for item in columns):
-                return "O Won - Column"
+                return "Blue Won - Column"
 
         # Draw or X Rule
         free_tile = False
@@ -133,9 +142,9 @@ class Game:
                     o_count += 1
 
             if x_count > o_count:
-                return "X Won - X Rule"
+                return "Red Won - X Rule"
             elif x_count < o_count:
-                return "O Won - X Rule"
+                return "Blue Won - X Rule"
             elif x_count == o_count:
                 return "Draw"
 
@@ -147,9 +156,11 @@ class Minimax:
     def get_best_move(self, board):
         best_move = [-1, -1]
         best_value = -sys.maxsize
+
+        # Select place on cross lines first
         for row in range(board.size):
             for col in range(board.size):
-                if not board.is_tile_marked(row, col):
+                if not board.is_tile_marked(row, col) and board.is_mark_at_cross_lines(row, col):
                     board.set_mark_at(row, col, "X")
                     move_value = self.minimax(board, MAX_DEPTH, -sys.maxsize, sys.maxsize, False)
                     board.set_mark_at(row, col, "E")
@@ -157,6 +168,39 @@ class Minimax:
                         best_move[0] = row
                         best_move[1] = col
                         best_value = move_value
+
+        # Select place on whole table if not selected on cross lines before
+        if best_value != -sys.maxsize:
+            for row in range(board.size):
+                for col in range(board.size):
+                    if not board.is_tile_marked(row, col):
+                        board.set_mark_at(row, col, "X")
+                        move_value = self.minimax(board, MAX_DEPTH, -sys.maxsize, sys.maxsize, False)
+                        board.set_mark_at(row, col, "E")
+                        if move_value > best_value:
+                            best_move[0] = row
+                            best_move[1] = col
+                            best_value = move_value
+
+        # Select place on cross lines randomly if no suitable place found before
+        randomly_cross_move_selected = False
+        if best_value == -sys.maxsize:
+            for row in range(board.size):
+                for col in range(board.size):
+                    if not board.is_tile_marked(row, col) and board.is_mark_at_cross_lines(row, col):
+                        best_move[0] = row
+                        best_move[1] = col
+                        randomly_cross_move_selected = True
+
+        # Select place on whole table randomly if no suitable place found before
+        if not randomly_cross_move_selected:
+            if best_value == -sys.maxsize:
+                for row in range(board.size):
+                    for col in range(board.size):
+                        if not board.is_tile_marked(row, col):
+                            best_move[0] = row
+                            best_move[1] = col
+
         return best_move
 
     def minimax(self, board, depth, alpha, beta, is_max):
@@ -191,7 +235,6 @@ class Minimax:
             return lowest_val
 
     def evaluate_board(self, board, depth):
-
         x_win = X_VAL * board.size
         o_win = O_VAL * board.size
 
@@ -201,9 +244,9 @@ class Minimax:
             for col in range(board.size):
                 row_sum += board.get_mark_value_at(row, col)
             if row_sum == x_win:
-                return 100 - depth
+                return 10 + depth
             elif row_sum == o_win:
-                return -100 - depth
+                return -10 - depth
             row_sum = 0
 
         # Column
@@ -212,9 +255,9 @@ class Minimax:
             for row in range(board.size):
                 row_sum += board.get_mark_value_at(row, col)
             if row_sum == x_win:
-                return 100 - depth
+                return 10 + depth
             elif row_sum == o_win:
-                return -100 - depth
+                return -10 - depth
             row_sum = 0
 
         # Cross 1
@@ -222,9 +265,9 @@ class Minimax:
         for i in range(board.size):
             row_sum += board.get_mark_value_at(i, i)
         if row_sum == x_win:
-            return 100 - depth
+            return 10 + depth
         elif row_sum == o_win:
-            return -100 - depth
+            return -10 - depth
 
         # Cross 2
         row_sum = 0
@@ -232,35 +275,8 @@ class Minimax:
         for i in range(index_max + 1):
             row_sum += board.get_mark_value_at(i, index_max - i)
         if row_sum == x_win:
-            return 100 - depth
+            return 10 + depth
         elif row_sum == o_win:
-            return -100 - depth
-
-        """
-        # Cross X Rule
-        row_sum = 0
-        index_max = board.size - 1
-        for i in range(board.size):
-            row_sum += board.get_mark_value_at(i, i)
-        for i in range(index_max + 1):
-            row_sum += board.get_mark_value_at(i, index_max - i)
-
-        # board.size odd
-        if board.size % 2:
-            even = board.size // 2
-            odd = even + 1
-            row_sum -= board.get_mark_value_at(odd, odd)
-            if row_sum == x_win:
-                return 10 + depth
-            elif row_sum == o_win:
-                return -10 - depth
-
-        # board.size even
-        elif not board.size % 2:
-            if row_sum == x_win + X_VAL:
-                return 10 + depth
-            elif row_sum == o_win + O_VAL:
-                return -10 - depth
-        """
+            return -10 - depth
 
         return 0
