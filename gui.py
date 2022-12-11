@@ -5,7 +5,7 @@ import pygame
 
 pygame.init()
 pygame.font.init()
-pygame.display.set_caption("Tic-Tac-Toe Game")
+pygame.display.set_caption("TiX-TaX-ToX")
 
 # global variables
 SQ_SIZE = 90
@@ -100,14 +100,6 @@ while animating:
             # escape key -- Close the game
             if event.key == pygame.K_ESCAPE:
                 animating = False
-
-            # space bar -- Pause the game
-            if event.key == pygame.K_SPACE:
-                pausing = not pausing
-
-            # Backspace -- Restart the game
-            if event.key == pygame.K_r:
-                game = Game(board_size=BOARD_SIZE)
 
     # execution
     if not pausing:
