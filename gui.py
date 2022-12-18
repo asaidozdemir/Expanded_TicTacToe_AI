@@ -28,23 +28,29 @@ GREY = (40, 50, 60)  # for background
 WHITE = (150, 150, 150)  # for borders
 RED = (250, 50, 100)  # for "X" marks
 BLUE = (50, 150, 200)  # for "O" marks
+GREEN = (0, 255, 0)
 COLORS = {"E": GREY, "X": RED, "O": BLUE}
 
 
 # grid
 def draw_grid(left=0, top=0):
+    index = 0
     for row in range(0, BOARD_SIZE):
         for column in range(0, BOARD_SIZE):
             position_x = left + column * SQ_SIZE
             position_y = top + row * SQ_SIZE
             square = pygame.Rect(position_x, position_y, SQ_SIZE, SQ_SIZE)
             pygame.draw.rect(SCREEN, WHITE, square, width=3)
+            if row == column or index == row and BOARD_SIZE - index - 1 == column:
+                square_fill = pygame.Rect(position_x + 3, position_y + 3, SQ_SIZE - 6, SQ_SIZE - 6)
+                pygame.draw.rect(SCREEN, GREEN, square_fill, width=3)
 
             # move half square to right_bottom side
             mark_x = position_x + SQ_SIZE // 2
             mark_y = position_y + SQ_SIZE // 2
 
             draw_marks(mark_x, mark_y, row, column)
+        index += 1
 
 
 # marks
