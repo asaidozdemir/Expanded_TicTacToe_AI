@@ -1,3 +1,4 @@
+import random
 import sys
 
 MAX_DEPTH = 6
@@ -185,21 +186,30 @@ class Minimax:
         # Select place on cross lines randomly if no suitable place found before
         randomly_cross_move_selected = False
         if best_value == -sys.maxsize:
+            possible_moves=[]
             for row in range(board.size):
                 for col in range(board.size):
                     if not board.is_tile_marked(row, col) and board.is_mark_at_cross_lines(row, col):
-                        best_move[0] = row
-                        best_move[1] = col
-                        randomly_cross_move_selected = True
+                        possible_moves.append([row,col])
+            if len(possible_moves) !=0:
+                pos = random.randint(0, len(possible_moves)-1)
+                best_move[0]=possible_moves[pos][0]
+                best_move[1]=possible_moves[pos][1]
+                randomly_cross_move_selected = True
 
         # Select place on whole table randomly if no suitable place found before
         if not randomly_cross_move_selected:
             if best_value == -sys.maxsize:
+                possible_moves=[]
                 for row in range(board.size):
                     for col in range(board.size):
                         if not board.is_tile_marked(row, col):
-                            best_move[0] = row
-                            best_move[1] = col
+                            possible_moves.append([row,col])
+                if len(possible_moves) != 0:
+                    pos = random.randint(0, len(possible_moves)-1)
+                    best_move[0] = possible_moves[pos][0]
+                    best_move[1] = possible_moves[pos][1]
+                    randomly_cross_move_selected = True
 
         return best_move
 
